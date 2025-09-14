@@ -1,27 +1,24 @@
 package infrastructure
 
 import (
-    "sync"
-    "github.com/surafelbkassa/go-distributed-job-queue/Domain"
-    "github.com/surafelbkassa/go-distributed-job-queue/Repository"
+	"time"
+
+	domain "github.com/surafelbkassa/go-distributed-job-queue/Domain"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type InMemoryUserRepository struct {
-    users []*domain.User
-    mu    sync.Mutex
+type UserRepo struct {
+	collection *mongo.Collection
 }
 
-func NewInMemoryUserRepository() *InMemoryUserRepository {
-    return &InMemoryUserRepository{
-        users: make([]*domain.User, 0),
-    }
+func NewUserRepo(db *mongo.Client, dbName string) *UserRepo {
+	return &UserRepo{
+		collection: db.Database(dbName).Collection("users"),
+	}
 }
 
-func (r *InMemoryUserRepository) Save(user *domain.User) error {
-    r.mu.Lock()
-    defer r.mu.Unlock()
-    r.users = append(r.users, user)
-    return nil
+func (r *UserRepo) Create(user *domain.User) error {
+	user.CreatedAt = time.Now()
+	_, err := r.collection.InsertOne(nil, user)
+	return err
 }
-
-// Optionally, add methods like FindByEmail, etc.
