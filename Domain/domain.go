@@ -1,22 +1,36 @@
 package domain
 
-import "time"
+import (
+	"time"
 
-type User struct {
-	Id        int64
-	Username  string
-	Email     string
-	Password  string
+	"github.com/google/uuid"
+)
+
+type Status string
+
+const (
+	StatusPending    Status = "pending"
+	StatusInProgress Status = "in_progress"
+	StatusCompleted  Status = "completed"
+	StatusFailed     Status = "failed"
+)
+
+type Job struct {
+	ID        string
+	Name      string
+	Status    Status
+	Payload   string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
 
-func NewUser(username, email, password string) *User {
+func NewJob(name string, payload string) *Job {
 	now := time.Now()
-	return &User{
-		Username:  username,
-		Email:     email,
-		Password:  password,
+	return &Job{
+		ID:        uuid.New().String(),
+		Name:      name,
+		Status:    StatusPending,
+		Payload:   payload,
 		CreatedAt: now,
 		UpdatedAt: now,
 	}
