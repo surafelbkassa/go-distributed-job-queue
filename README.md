@@ -19,7 +19,7 @@ A distributed job queue system built with **Go** and **Redis**, designed for run
 ## 🚀 Getting Started
 1. Clone repo:  
    ```sh
-   git clone https://github.com/<your-username>/go-distributed-job-queue.git
+   git clone https://github.com/surafelbkassa/go-distributed-job-queue.git
    cd go-distributed-job-queue
 ````
 
