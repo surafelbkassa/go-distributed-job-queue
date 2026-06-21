@@ -1,36 +1,45 @@
 package usecases
 
 import (
-	"errors"
+	"fmt"
+	"time"
 
 	domain "github.com/surafelbkassa/go-distributed-job-queue/Domain"
 	repository "github.com/surafelbkassa/go-distributed-job-queue/Repository"
 )
 
-type RegisterUserInput struct {
-	Username string
-	Email    string
-	Password string
+type JobUsecase struct {
+	JobRepo repository.JobRepository
 }
 
-type RegisterUserUsecase struct {
-	UserRepo repository.UserRepository
+func NewJobUsecase(jobRepo repository.JobRepository) *JobUsecase {
+	return &JobUsecase{JobRepo: jobRepo}
 }
 
-func NewRegisterUserUsecase(userRepo repository.UserRepository) *RegisterUserUsecase {
-	return &RegisterUserUsecase{UserRepo: userRepo}
-}
-
-func (uc *RegisterUserUsecase) Execute(input RegisterUserInput) (*domain.User, error) {
-	// Add validation as needed
-	if input.Username == "" || input.Email == "" || input.Password == "" {
-		return nil, errors.New("all fields are required")
-	}
-
-	user := domain.NewUser(input.Username, input.Email, input.Password)
-	err := uc.UserRepo.Save(user)
+func (uc *JobUsecase) EnqueueJob(name, payload string) (*domain.Job, error) {
+	job := domain.NewJob(name, payload)
+	err := uc.JobRepo.EnqueueJob(job)
 	if err != nil {
 		return nil, err
 	}
-	return user, nil
+	return job, nil
+}
+
+func (uc *JobUsecase) ProcessJob() error {
+
+	job, err := uc.JobRepo.Dequeue()
+	if err != nil {
+		return err
+	}
+	err = uc.JobRepo.UpdateStatus(job.ID, domain.StatusInProgress)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Processing task %s payload %s at hand", job.Name, job.Payload)
+	time.Sleep(2 * time.Second)
+	err = uc.JobRepo.UpdateStatus(job.ID, domain.StatusCompleted)
+	if err != nil {
+		return err
+	}
+	return nil
 }

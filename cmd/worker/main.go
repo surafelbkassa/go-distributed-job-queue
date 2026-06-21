@@ -1,30 +1,30 @@
 package main
 
 import (
-	"context"
 	"fmt"
-	"time"
 
 	infrastructure "github.com/surafelbkassa/go-distributed-job-queue/Infrastructure"
+	repository "github.com/surafelbkassa/go-distributed-job-queue/Repository"
+
+	usecases "github.com/surafelbkassa/go-distributed-job-queue/Usecases"
 )
 
 func main() {
-	client := infrastructure.NewRedisClient()
-	ctx := context.Background()
-	queueName := "job_queue"
-	fmt.Println("Worker live and waiting for jobs...")
+	redisClient := infrastructure.NewRedisClient()
+	jobRepo := repository.NewRedisJobRepository(redisClient, "jobs")
+	jobUsecases := usecases.NewJobUsecase(jobRepo)
+	numWorkers := 5
+	for i := 0; i < numWorkers; i++ {
+		go func(workerID int) {
+			fmt.Printf("Worker %d started", workerID)
+			for {
+				err := jobUsecases.ProcessJob()
+				if err != nil {
+					fmt.Printf("Error processing job: %v\n", err)
+				}
 
-	for {
-		results, err := client.BLPop(ctx, 0, queueName).Result()
-		if err != nil {
-			fmt.Printf("Error fetching job: %v\n", err)
-			continue
-		}
-
-		jobId := results[1]
-		fmt.Printf("Processing job ID: %s\n", jobId)
-
-		time.Sleep(2 * time.Second)
-		fmt.Printf("✅Finished processing job ID: %s\n", jobId)
+			}
+		}(i)
 	}
+	select {}
 }

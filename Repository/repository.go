@@ -18,6 +18,10 @@ type RedisJobRepository struct {
 	queuename string
 }
 
+func NewRedisJobRepository(client *redis.Client, queuename string) *RedisJobRepository {
+	return &RedisJobRepository{client: client, queuename: queuename}
+}
+
 func (r *RedisJobRepository) EnqueueJob(Job *domain.Job) error {
 
 	ctx := context.Background()

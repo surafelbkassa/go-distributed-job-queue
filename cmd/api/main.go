@@ -1,37 +1,33 @@
 package main
 
 import (
-	"context"
-	"fmt"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	infrastructure "github.com/surafelbkassa/go-distributed-job-queue/Infrastructure"
+	repository "github.com/surafelbkassa/go-distributed-job-queue/Repository"
+	usecases "github.com/surafelbkassa/go-distributed-job-queue/Usecases"
 )
 
 func main() {
 	r := gin.Default()
 
 	redisClient := infrastructure.NewRedisClient()
-	ctx := context.Background()
+	repo := repository.NewRedisJobRepository(redisClient, "jobs")
+	usecase := usecases.NewJobUsecase(repo)
 	r.POST("/enqueue", func(c *gin.Context) {
-		jobID := c.Query("jobID")
-
-		if jobID == "" {
-			c.JSON(400, gin.H{"error": "jobID is required"})
+		var body struct {
+			Name    string `json:"name"`
+			Payload string `json:"payload"`
+		}
+		if err := c.ShouldBindJSON(&body); err != nil {
+			c.JSON(400, gin.H{"error": err.Error()})
 			return
 		}
-
-		err := redisClient.LPush(ctx, "job_queue", jobID).Err()
-
+		job, err := usecase.EnqueueJob(body.Name, body.Payload)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to enqueue job"})
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
 		}
+		c.JSON(200, gin.H{"message": "Job enqueued", "job": job})
 
-		fmt.Println("Job sent to redis", jobID)
-
-		c.JSON(http.StatusOK, gin.H{"message": "Job enqueued successfully", "jobID": jobID})
 	})
-	fmt.Println("API server running on 8080...")
-	r.Run(":8080")
 }
