@@ -8,7 +8,7 @@ services:
 
   api:
     build: .
-    command: ./api
+    command: ./api_bin
     ports:
       - "8080:8080"
     depends_on:
@@ -18,7 +18,7 @@ services:
 
   worker:
     build: .
-    command: ./worker
+    command: ./worker_bin
     depends_on:
       - redis
     environment:

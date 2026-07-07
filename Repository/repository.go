@@ -12,6 +12,7 @@ type JobRepository interface {
 	EnqueueJob(job *domain.Job) error
 	Dequeue() (*domain.Job, error)
 	UpdateStatus(id string, status domain.Status) error
+	GetJob(id string) (*domain.Job, error)
 }
 type RedisJobRepository struct {
 	client    *redis.Client
@@ -69,4 +70,18 @@ func (r *RedisJobRepository) UpdateStatus(id string, status domain.Status) error
 		return err
 	}
 	return r.client.Set(ctx, "job:"+id, updated, 0).Err()
+}
+
+func (r *RedisJobRepository) GetJob(id string) (*domain.Job, error) {
+	ctx := context.Background()
+	data, err := r.client.Get(ctx, "job:"+id).Bytes()
+	if err != nil {
+		return nil, err
+	}
+	var job domain.Job
+	err = json.Unmarshal(data, &job)
+	if err != nil {
+		return nil, err
+	}
+	return &job, nil
 }

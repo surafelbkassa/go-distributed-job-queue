@@ -43,3 +43,11 @@ func (uc *JobUsecase) ProcessJob() error {
 	}
 	return nil
 }
+
+func (uc *JobUsecase) GetJob(id string) (*domain.Job, error) {
+	job, err := uc.JobRepo.GetJob(id)
+	if err != nil {
+		return nil, err
+	}
+	return job, nil
+}
