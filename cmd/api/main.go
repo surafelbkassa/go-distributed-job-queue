@@ -11,7 +11,6 @@ import (
 
 func main() {
 	r := gin.Default()
-	r.Run(":8080")
 
 	redisClient := infrastructure.NewRedisClient()
 	repo := repository.NewRedisJobRepository(redisClient, "jobs")
@@ -42,4 +41,5 @@ func main() {
 		}
 		c.JSON(http.StatusOK, gin.H{"job": job})
 	})
+	r.Run(":8080")
 }
