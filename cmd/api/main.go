@@ -5,8 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	infrastructure "github.com/surafelbkassa/go-distributed-job-queue/Infrastructure"
-	repository "github.com/surafelbkassa/go-distributed-job-queue/Repository"
-	usecases "github.com/surafelbkassa/go-distributed-job-queue/Usecases"
+	repository "github.com/surafelbkassa/go-distributed-job-queue/internal/Repository/redis"
+	usecases "github.com/surafelbkassa/go-distributed-job-queue/internal/Usecases"
 )
 
 func main() {

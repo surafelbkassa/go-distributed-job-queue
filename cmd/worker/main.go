@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	infrastructure "github.com/surafelbkassa/go-distributed-job-queue/Infrastructure"
-	repository "github.com/surafelbkassa/go-distributed-job-queue/Repository"
+	repository "github.com/surafelbkassa/go-distributed-job-queue/internal/Repository/redis"
 
-	usecases "github.com/surafelbkassa/go-distributed-job-queue/Usecases"
+	usecases "github.com/surafelbkassa/go-distributed-job-queue/internal/Usecases"
 )
 
 func main() {
