@@ -1,7 +1,10 @@
 
 services:
   redis:
-    image: redis:alpine
+    image: redis:7-alpine
+    command: ["redis-erver", "--appendonly", "yes"]
+    volumes:
+      - redi-data:/data
     ports:
       - "6379:6379"
     healthcheck:
@@ -16,9 +19,11 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - redis
+      - redis:
+        condition: service_healthy
     environment:
       - REDIS_ADDR=redis:6379
+      - HTTP_ADDR=:8080
 
   worker:
     build: .

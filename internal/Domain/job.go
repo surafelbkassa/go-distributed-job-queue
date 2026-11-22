@@ -1,6 +1,9 @@
 package domain
 
-import "time"
+import (
+	"errors"
+	"time"
+)
 
 type Status string
 
@@ -11,6 +14,8 @@ const (
 	StatusFailed     Status = "failed"
 )
 
+var ErrNotFound = errors.New("Job not found")
+
 type Job struct {
 	ID          string
 	Type        string
@@ -19,5 +24,6 @@ type Job struct {
 	Attempts    int
 	MaxAttempts int
 	Payload     []byte
+	LastError   string
 	CreatedAt   time.Time
 }
