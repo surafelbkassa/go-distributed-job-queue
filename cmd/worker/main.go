@@ -3,16 +3,16 @@ package main
 import (
 	"fmt"
 
-	infrastructure "github.com/surafelbkassa/go-distributed-job-queue/Infrastructure"
-	repository "github.com/surafelbkassa/go-distributed-job-queue/internal/Repository/redis"
+	infrastructure "github.com/surafelbkassa/go-distributed-job-queue/internal/infrastructure"
+	repository "github.com/surafelbkassa/go-distributed-job-queue/internal/repository"
 
-	usecases "github.com/surafelbkassa/go-distributed-job-queue/internal/Usecases"
+	"github.com/surafelbkassa/go-distributed-job-queue/internal/usecase"
 )
 
 func main() {
 	redisClient := infrastructure.NewRedisClient()
 	jobRepo := repository.NewRedisJobRepository(redisClient, "jobs")
-	jobUsecases := usecases.NewJobUsecase(jobRepo)
+	jobUsecases := usecase.NewJobUsecase(jobRepo)
 	numWorkers := 5
 	for i := 0; i < numWorkers; i++ {
 		go func(workerID int) {

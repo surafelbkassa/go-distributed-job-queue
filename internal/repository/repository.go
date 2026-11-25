@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 
 	"github.com/redis/go-redis/v9"
-	domain "github.com/surafelbkassa/go-distributed-job-queue/internal/Domain"
+	domain "github.com/surafelbkassa/go-distributed-job-queue/internal/domain"
 )
 
 type JobRepository interface {

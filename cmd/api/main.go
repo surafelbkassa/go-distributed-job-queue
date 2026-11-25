@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	infrastructure "github.com/surafelbkassa/go-distributed-job-queue/Infrastructure"
-	repository "github.com/surafelbkassa/go-distributed-job-queue/internal/Repository/redis"
-	usecases "github.com/surafelbkassa/go-distributed-job-queue/internal/Usecases"
+	infrastructure "github.com/surafelbkassa/go-distributed-job-queue/internal/infrastructure"
+	repository "github.com/surafelbkassa/go-distributed-job-queue/internal/repository"
+	"github.com/surafelbkassa/go-distributed-job-queue/internal/usecase"
 )
 
 func main() {
@@ -14,7 +14,7 @@ func main() {
 
 	redisClient := infrastructure.NewRedisClient()
 	repo := repository.NewRedisJobRepository(redisClient, "jobs")
-	usecase := usecases.NewJobUsecase(repo)
+	usecase := usecase.NewJobUsecase(repo)
 	r.POST("/enqueue", func(c *gin.Context) {
 		var body struct {
 			Name    string `json:"name"`

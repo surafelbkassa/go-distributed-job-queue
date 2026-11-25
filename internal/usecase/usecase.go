@@ -1,11 +1,11 @@
-package usecases
+package usecase
 
 import (
 	"fmt"
 	"time"
 
-	domain "github.com/surafelbkassa/go-distributed-job-queue/internal/Domain"
-	repository "github.com/surafelbkassa/go-distributed-job-queue/internal/Repository/redis"
+	domain "github.com/surafelbkassa/go-distributed-job-queue/internal/domain"
+	repository "github.com/surafelbkassa/go-distributed-job-queue/internal/repository"
 )
 
 type JobUsecase struct {
